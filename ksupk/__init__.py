@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from .ksupk_mini import *
+from .ksupk_templates import *
 
 __all__ = [
 "ThreadWithReturnValue", 
@@ -34,7 +35,9 @@ __all__ = [
 "is_int", 
 "utf8_to_bytes", 
 "bytes_to_utf8", 
-"get_random_string", 
+"gen_random_string", 
 "exe_lowout", 
-"exe"
+"exe",
+"singleton_decorator",
+"SingletonClass"
 ]

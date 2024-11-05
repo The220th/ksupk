@@ -1,10 +1,15 @@
+# python3 -m pip install --upgrade pip build setuptools twine
+# python3 -m build
+# python3 -m twine upload --repository testpypi dist/*
+# pip3 install --no-deps --index-url https://test.pypi.org/simple {package_name}
+
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "ksupk"
-version = "2024.11.04.01"
+version = "2024.11.05.01"
 authors = [
   { name="The220th", email="The220th@gmail.com" },
 ]
