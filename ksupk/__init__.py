@@ -2,6 +2,9 @@
 
 from .ksupk_mini import *
 from .ksupk_templates import *
+from .ksupk_probability_bag import ProbabilityBag
+
+__version__ = "2024.12.13.01"
 
 __all__ = [
 "ThreadWithReturnValue", 
@@ -39,5 +42,5 @@ __all__ = [
 "exe_lowout", 
 "exe",
 "singleton_decorator",
-"SingletonClass"
+"ProbabilityBag",
 ]
