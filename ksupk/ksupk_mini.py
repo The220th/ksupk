@@ -109,7 +109,7 @@ def mkdir_with_p(path: str, p: bool = True):
 
 
 def get_link_unwinding(link_path: str) -> str or None:
-    """Вернёт конечный файл, на который (рекурсивно) ссылаются сылки. """
+    """Вернёт конечный файл, на который (рекурсивно) ссылаются ссылки. """
     if(os.path.exists(link_path) == False):
         return None
     elif(os.path.islink(link_path) == False):
@@ -245,12 +245,21 @@ def bytes_to_int(bs: bytes, set_auto_max_str_digits: bool = True) -> int:
     return res
 
 
-def is_int(x: int) -> bool:
+def is_int(x) -> bool:
     try:
-        int(a);
+        int(x);
         return True
-    except ValueError : 
+    except ValueError:
         return False
+
+
+def is_float(x) -> bool:
+    try:
+        float(x);
+        return True
+    except ValueError:
+        return False
+
 
 def utf8_to_bytes(s: str) -> bytes:
     return s.encode("utf-8")

@@ -2,9 +2,10 @@
 
 from .ksupk_mini import *
 from .ksupk_templates import *
+from .sets import *
 from .ksupk_probability_bag import ProbabilityBag
 
-__version__ = "2024.12.13.01"
+__version__ = "2024.12.31.01"
 
 __all__ = [
 "ThreadWithReturnValue", 
@@ -36,11 +37,15 @@ __all__ = [
 "int_to_bytes", 
 "bytes_to_int", 
 "is_int", 
+"is_float", 
 "utf8_to_bytes", 
 "bytes_to_utf8", 
 "gen_random_string", 
 "exe_lowout", 
 "exe",
 "singleton_decorator",
+"get_video_extensions",
+"get_audio_extensions",
+"get_image_extensions",
 "ProbabilityBag",
 ]
