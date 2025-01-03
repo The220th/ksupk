@@ -69,7 +69,7 @@ def get_abs_path_of_files(files: list) -> list:
 
 def rm_folder_content(folder_path: str, root_dir_too: bool = False, does_not_exists_is_ok = False):
     """Удаляет всё содержимое папки. Саму папку не трогает, если root_dir_too == False"""
-    if(does_not_exists_is_ok == True and is_folder(folder_path) == False):
+    if(does_not_exists_is_ok == True and os.path.isdir(folder_path) == False):
         return
     for root, dirs, files in os.walk(folder_path, topdown=False):
         for file_i in files:
@@ -108,15 +108,21 @@ def mkdir_with_p(path: str, p: bool = True):
     os.makedirs(path, exist_ok=True)
 
 
+def mkdir_needed_for_file(file: str):
+    needed_dir_to_exists = os.path.dirname(file)
+    if not os.path.isdir(needed_dir_to_exists):
+        mkdir_with_p(needed_dir_to_exists)
+
+
 def get_link_unwinding(link_path: str) -> str or None:
     """Вернёт конечный файл, на который (рекурсивно) ссылаются ссылки. """
-    if(os.path.exists(link_path) == False):
+    if os.path.exists(link_path) == False:
         return None
-    elif(os.path.islink(link_path) == False):
+    elif os.path.islink(link_path) == False:
         return link_path
     else:
         linkto = os.readlink(link_path)
-        if(os.path.islink(linkto) == False):
+        if os.path.islink(linkto) == False:
             return linkto
         else:
             return get_link_unwinding(linkto)
@@ -170,14 +176,14 @@ def calc_hash_of_hashes(hashes: list, retun_str: bool = True, algo = hashlib.sha
     for hash_i in hashes:
         hash_files += hash_i
         li-=-1
-        if(li == 30):
-            hash_files = get_hash_str(hash_files)
+        if li == 30:
+            hash_files = calc_hash_of_str(hash_files)
             li = 0
-    hash_files = get_hash_str(hash_files, algo=algo, retun_str=retun_str)
+    hash_files = calc_hash_of_str(hash_files, algo=algo, retun_str=retun_str)
     return hash_files
 
 
-def calc_hash_of_dir(dir_path: str, hierarchy: bool = False, retun_str: bool = True, algo = hashlib.sha256) -> str:
+def calc_hash_of_dir(dir_path: str, hierarchy: bool = False, retun_str: bool = True, algo = hashlib.sha256) -> str | bytes:
     files = get_files_list(dir_path)
     sha = algo()
 
@@ -247,7 +253,7 @@ def bytes_to_int(bs: bytes, set_auto_max_str_digits: bool = True) -> int:
 
 def is_int(x) -> bool:
     try:
-        int(x);
+        int(x)
         return True
     except ValueError:
         return False
@@ -255,7 +261,7 @@ def is_int(x) -> bool:
 
 def is_float(x) -> bool:
     try:
-        float(x);
+        float(x)
         return True
     except ValueError:
         return False
@@ -269,23 +275,31 @@ def bytes_to_utf8(bs: bytes) -> str:
     return str(bs, "utf-8")
 
 
-def gen_random_string(_lenght : int = 20, pool: str = None) -> str:
+def gen_random_string(_lenght : int = 20, pool: str = None, seed: int | None = None) -> str:
+    rnd = random.Random(seed) if seed is not None else random.Random(get_random_int(fast=True))
     if pool is None:
         pool = string.ascii_letters + string.digits
-    S = ''.join(random.choices(pool, k=_lenght))
-    return S
+    s = "".join(rnd.choices(pool, k=_lenght))
+    return s
+
+
+def get_random_int(fast: bool = False) -> int:
+    if fast:
+        return random.randint(-2147483647, 2147483647)
+    else:
+        return bytes_to_int(os.urandom(8))
 
 
 def exe_lowout(command: str, debug: bool = True, std_out_pipe: bool = False, std_err_pipe: bool = False) -> tuple:
-    '''
+    """
     Аргумент command - команда для выполнения в терминале. Например: "ls -lai ."
     Возвращает кортеж, где элементы:
         0 - строка stdout or None if std_out_pipe == False
         1 - строка stderr or None if std_err_pipe == False
         2 - returncode
-    '''
+    """
     if(debug):
-        pout(f"> {command}")
+        print(f"> {command}")
     
     if(std_out_pipe == True):
         if(std_err_pipe == True):
@@ -326,9 +340,9 @@ def exe(command: str, debug: bool = True, std_out_fd = subprocess.PIPE, std_err_
     if(debug):
         #pout(f"> " + " ".join(command))
         if(stdin_msg != None):
-            pout(f"> {command}, with stdin=\"{stdin_msg}\"")
+            print(f"> {command}, with stdin=\"{stdin_msg}\"")
         else:
-            pout(f"> {command}")
+            print(f"> {command}")
 
     #proc = subprocess.run(command, shell=True, capture_output=True, input=stdin_msg.encode("utf-8"))
     if(stdin_msg == None):
@@ -341,3 +355,86 @@ def exe(command: str, debug: bool = True, std_out_fd = subprocess.PIPE, std_err_
     res_stdout = proc.stdout.decode("utf-8") if proc.stdout != None else None
     res_errout = proc.stderr.decode("utf-8") if proc.stderr != None else None
     return (res_stdout, res_errout, proc.returncode)
+
+
+def create_random_file(path: str, min_bytes_count: int = 1027, max_bytes_count: int = 18388608, seed: int | None = None):
+    if max_bytes_count > min_bytes_count:
+        raise ValueError(f"min_bytes_count={min_bytes_count} cannot be greater than max_bytes_count={max_bytes_count}")
+    if seed is None:
+        r = random.Random()
+    else:
+        r = random.Random(seed)
+
+    i, N = 0, random.randint(min_bytes_count, max_bytes_count)
+    block_size = 8388608 # 8*1024*1024 == 8 MB
+    with open(path, 'wb') as fd:
+        while i < N:
+            if i+block_size > N:
+                count_to_write = N-i
+            else:
+                count_to_write = block_size
+            fd.write(r.randbytes(count_to_write))
+            i += count_to_write
+        fd.flush()
+
+
+def gen_rnd_dir_tree(root_path: str, seed: int | None = None,
+             min_files_count: int = None, max_files_count: int = None,
+             file_prob: float = 0.5, dir_prob: float = 0.2,
+             file_size_min: int = 1027, file_size_max: int = 18388608) -> dict[str, int]:
+    """
+    Return dict with {file_name: file_size}
+    """
+
+    if not os.path.isdir(root_path):
+        raise ValueError(f"\"{root_path}\" is not directory. ")
+    if file_size_min > file_size_max:
+        raise ValueError(f"file_size_min={file_size_min} cannot be greater than file_size_max={file_size_max}. ")
+    if min_files_count is not None and max_files_count is not None and min_files_count > max_files_count:
+        raise ValueError(f"min_files_count={min_files_count} cannot be greater than max_files_count={max_files_count}. ")
+
+    if seed is None:
+        seed = get_random_int()
+    r = random.Random(seed)
+
+    N_min, N_max = min_files_count, max_files_count
+    curN = 0
+    p, dp = file_prob, dir_prob
+    res = {}
+
+    dirs = [root_path]
+
+    while True:
+        if N_max is not None and curN >= N_max:
+            break
+        cur_dir = r.choice(dirs)
+        if r.random() < p:
+            seed += 1
+            file_path = os.path.join(cur_dir, gen_random_string(r.randint(5, 15), seed=seed))
+            res[file_path] = r.randint(file_size_min, file_size_max)
+            curN += 1
+        elif r.random() < dp:
+            seed += 1
+            new_dir = os.path.join(cur_dir, gen_random_string(r.randint(5, 15), seed=seed))
+            dirs.append(new_dir)
+        else:
+            if N_min is not None and curN < N_min:
+                continue
+            break
+
+    return res
+
+
+def create_random_dir(dir_tree: dict, seed: int | None = None):
+    """
+    dir_tree is dict[str, int] from gen_rnd_dir_tree
+    """
+    if seed is None:
+        seed = get_random_int()
+    r = random.Random(seed)
+    needed_dirs = get_dirs_needed_for_files([file_i for file_i in dir_tree])
+    for needed_dir_i in needed_dirs:
+        mkdir_with_p(needed_dir_i)
+    for file_i in dir_tree:
+        seed += 1
+        create_random_file(file_i, dir_tree[file_i], dir_tree[file_i], seed=seed)

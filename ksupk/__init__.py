@@ -5,7 +5,7 @@ from .ksupk_templates import *
 from .sets import *
 from .ksupk_probability_bag import ProbabilityBag
 
-__version__ = "2024.12.31.01"
+__version__ = "2024.01.03.01"
 
 __all__ = [
 "ThreadWithReturnValue", 
@@ -20,7 +20,8 @@ __all__ = [
 "read_from_file_str", 
 "save_json", 
 "restore_json", 
-"mkdir_with_p", 
+"mkdir_with_p",
+"mkdir_needed_for_file",
 "get_link_unwinding", 
 "get_time_str", 
 "get_datetime_from_str", 
@@ -40,9 +41,12 @@ __all__ = [
 "is_float", 
 "utf8_to_bytes", 
 "bytes_to_utf8", 
-"gen_random_string", 
+"gen_random_string",
+"get_random_int",
 "exe_lowout", 
 "exe",
+"gen_rnd_dir_tree",
+"create_random_dir",
 "singleton_decorator",
 "get_video_extensions",
 "get_audio_extensions",
