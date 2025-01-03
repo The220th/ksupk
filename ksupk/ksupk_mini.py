@@ -358,7 +358,7 @@ def exe(command: str, debug: bool = True, std_out_fd = subprocess.PIPE, std_err_
 
 
 def create_random_file(path: str, min_bytes_count: int = 1027, max_bytes_count: int = 18388608, seed: int | None = None):
-    if max_bytes_count > min_bytes_count:
+    if min_bytes_count > max_bytes_count:
         raise ValueError(f"min_bytes_count={min_bytes_count} cannot be greater than max_bytes_count={max_bytes_count}")
     if seed is None:
         r = random.Random()
