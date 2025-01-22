@@ -5,7 +5,7 @@ from .ksupk_templates import *
 from .sets import *
 from .ksupk_probability_bag import ProbabilityBag
 
-__version__ = "2025.01.03.02"
+__version__ = "2025.01.22.01"
 
 __all__ = [
 "ThreadWithReturnValue", 
@@ -25,7 +25,8 @@ __all__ = [
 "get_link_unwinding", 
 "get_time_str", 
 "get_datetime_from_str", 
-"get_timestamp_of_file", 
+"get_timestamp_of_file",
+"calc_hash", 
 "calc_hash_of_file", 
 "calc_hash_of_str", 
 "calc_hash_of_hashes", 

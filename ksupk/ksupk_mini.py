@@ -148,7 +148,7 @@ def get_timestamp_of_file(file_path: str, tamplate: str = "%Y-%m-%d_%H-%M-%S") -
     return dt_m.strftime(tamplate)
 
 
-def calc_hash_of_file(file_path: str, retun_str: bool = True, algo = hashlib.sha256) -> str or bytes:
+def calc_hash_of_file(file_path: str, retun_str: bool = True, algo = hashlib.sha256) -> str | bytes:
     buff_BLOCKSIZE = 65536  # 64 kB
     sha = algo()
     with open(file_path, "rb") as temp:
@@ -162,7 +162,34 @@ def calc_hash_of_file(file_path: str, retun_str: bool = True, algo = hashlib.sha
         return sha.digest()
 
 
-def calc_hash_of_str(s: str, retun_str: bool = True, algo = hashlib.sha256) -> str or bytes:
+def calc_hash(x: str | bytes | bytearray, algo = hashlib.sha256, 
+    force_return_str: bool = False, force_return_bytes: bool = False) -> str | bytes | tuple[str, bytes]:
+    return_mode = None
+    if isinstance(x, str):
+        x = s.encode("utf-8")
+        return_mode = 1
+    elif isinstance(x, bytes) or isinstance(x, bytearray):
+        return_mode = 2
+    else:
+        raise ValueError(f"x ({type(x)}) must be str, bytes or bytearray")
+    hl = algo(x)
+    if force_return_str:
+        return_mode = 1
+    elif force_return_bytes:
+        return_mode = 2
+    elif force_return_str and force_return_bytes:
+        return_mode = 3
+    if return_mode == 1:
+        return hl.hexdigest()
+    elif return_mode == 2:
+        return hl.digest()
+    elif return_mode == 3:
+        return hl.hexdigest(), hl.digest()
+    else:
+        return None
+
+
+def calc_hash_of_str(s: str, retun_str: bool = True, algo = hashlib.sha256) -> str | bytes:
     hl = algo( s.encode("utf-8") )
     if retun_str:
         return hl.hexdigest()
