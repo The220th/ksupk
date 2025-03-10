@@ -5,7 +5,7 @@ from .ksupk_templates import *
 from .sets import *
 from .ksupk_probability_bag import ProbabilityBag
 
-__version__ = "2025.01.22.01"
+__version__ = "2025.03.10.01"
 
 __all__ = [
 "ThreadWithReturnValue", 
@@ -47,6 +47,7 @@ __all__ = [
 "exe_lowout", 
 "exe",
 "gen_rnd_dir_tree",
+"get_current_function_name",
 "create_random_dir",
 "singleton_decorator",
 "get_video_extensions",

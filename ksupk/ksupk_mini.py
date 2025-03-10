@@ -10,6 +10,7 @@ import json
 import string
 import random
 from threading import Thread
+import inspect
 
 
 class ThreadWithReturnValue(Thread):
@@ -465,3 +466,19 @@ def create_random_dir(dir_tree: dict, seed: int | None = None):
     for file_i in dir_tree:
         seed += 1
         create_random_file(file_i, dir_tree[file_i], dir_tree[file_i], seed=seed)
+
+
+def get_current_function_name() -> str:
+    """
+    Return function name, where this function (get_function_name) was called.
+    """
+    """
+    try:
+        pass
+    except Exception as e:
+        error_text = f"{traceback.format_exc()}\n{e}"
+    """
+    frame = inspect.currentframe()
+    caller_frame = frame.f_back
+    function_name = caller_frame.f_code.co_name
+    return function_name
